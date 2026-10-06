@@ -136,7 +136,7 @@ Useful everywhere:
 ```
 set wifi ssid <text>        # WiFi (gateway: always; remote: bench bootstrap)
 set wifi pass <text>
-set id device <device_uid>  # the uid your platform issued
+set id device <device_uid>  # the uid Jax gave you for this board
 set enroll secret <text>    # 32..128 chars — YOU choose it, once
 set bootstrap host <host>   # server serving /api/v1/devices/bootstrap
 set bootstrap port <port>   # default 8000
@@ -145,23 +145,35 @@ relay <ch> <on|off>         # manual wiring test (ch = 0..3)
 
 ## 6. Before you start: register two devices
 
-Each physical board is a separate device on the platform (the
-gateway **and every remote**). For each one you need a **device_uid**
-(UUID). With the Chaba service: message the agent on WhatsApp and ask
-to register a device — it returns the uid. Self-hosting the backend:
-create the device rows yourself; the bootstrap contract is a single
-endpoint:
+Each physical board is a separate device on the platform — the
+gateway **and every remote**. Registration goes through **Jax**, the
+Chaba WhatsApp agent: Jax provisions devices on your account via the
+Chaba MCP server. You never handle MQTT credentials — the board
+fetches those itself during bootstrap (§7 step 3, §8 step 3).
+
+For **each board**:
+
+1. Message Jax on WhatsApp, e.g. *"register a new device for me —
+   it's the gateway, serial ABC123"* (the serial printed on the
+   case), then again for each remote. Jax creates the device and
+   replies with its **device_uid** (a UUID).
+2. Choose an **enroll secret** per device: 32–128 random printable
+   characters (shorter ones are rejected — the serial CLI checks,
+   and the backend answers HTTP 422). You type it on the board with
+   `set enroll secret`, and for a remote you give the same secret to
+   the gateway as that peer's secret. It is the device's root
+   credential — treat it like a password. Mint one per device with:
+   `openssl rand -base64 48 | tr -d '/+=' ` (trim to ~43 chars).
+
+Self-hosting the backend instead of the Chaba service? Provision
+your device rows however you like — the only contract the firmware
+speaks is this one endpoint:
 
 ```
 POST http://<server>:8000/api/v1/devices/bootstrap
 {"device_uid": "...", "enrollment_secret": "..."}
 → 200 {"mqtt_username","mqtt_password","customer_uid","mqtt_host","mqtt_port"}
 ```
-
-Generate your own enroll secrets: **32–128 random printable
-characters each** (shorter ones are rejected — the serial CLI
-checks and the backend answers HTTP 422). Example:
-`openssl rand -base64 48 | tr -d '/+=' ` → trim to ~43 chars.
 
 ## 7. Gateway setup, step by step
 
