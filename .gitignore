@@ -1,0 +1,3 @@
+# Never commit real credentials — create your own from secrets.example.h
+secrets.h
+build/
