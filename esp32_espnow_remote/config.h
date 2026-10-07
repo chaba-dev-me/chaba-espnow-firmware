@@ -40,13 +40,13 @@
 
 // Bench-only: the remote associates just long enough to bootstrap.
 #ifndef DEFAULT_MQTT_HOST
-#define DEFAULT_MQTT_HOST ""
+#define DEFAULT_MQTT_HOST "10.0.4.1"
 #endif
 #ifndef DEFAULT_MQTT_PORT
 #define DEFAULT_MQTT_PORT 1883
 #endif
 #ifndef DEFAULT_BOOTSTRAP_HOST
-#define DEFAULT_BOOTSTRAP_HOST ""
+#define DEFAULT_BOOTSTRAP_HOST "10.0.4.1"
 #endif
 #ifndef DEFAULT_BOOTSTRAP_PORT
 #define DEFAULT_BOOTSTRAP_PORT 8000

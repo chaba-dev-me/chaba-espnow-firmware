@@ -135,7 +135,7 @@ void Runtime::runBootstrap() {
   }
   // getInt returns the default only when the key was never WRITTEN; a
   // blank-struct zero (fresh layout) or a stale/garbage value must also
-  // fall back — early builds asked for host:0 on first boot.
+  // fall back — 0.4.6 asked for 10.0.4.1:0 on first boot.
   int32_t bpRaw = nvs.getInt(NVS_KEY_BOOTSTRAP_PORT, DEFAULT_BOOTSTRAP_PORT);
   if (bpRaw <= 0 || bpRaw > 65535) bpRaw = DEFAULT_BOOTSTRAP_PORT;
   uint16_t bp = (uint16_t)bpRaw;

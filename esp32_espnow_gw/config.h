@@ -43,7 +43,7 @@
 #endif
 
 #ifndef DEFAULT_MQTT_HOST
-#define DEFAULT_MQTT_HOST ""
+#define DEFAULT_MQTT_HOST "10.0.4.1"
 #endif
 
 #ifndef DEFAULT_MQTT_PORT
@@ -51,7 +51,7 @@
 #endif
 
 #ifndef DEFAULT_BOOTSTRAP_HOST
-#define DEFAULT_BOOTSTRAP_HOST ""
+#define DEFAULT_BOOTSTRAP_HOST "10.0.4.1"
 #endif
 
 #ifndef DEFAULT_BOOTSTRAP_PORT
@@ -68,6 +68,10 @@
 
 // ESP-NOW link ------------------------------------------------
 #define ESPNOW_FRAME_VERSION 1
+// (The legacy shared ESPNOW_PMK constant was removed 2026-10-07 —
+// red-team H3. The PMK is now random per device and persisted via
+// the key-value store as "espnow.pmk"; see espnow_link.cpp. Per-pair
+// HKDF LMKs remain the effective frame keys for all encrypted peers.)
 // "a handful to a dozen" remotes per gateway (spec §5); 8 slots keeps
 // proxy RAM (WiFiClient + PubSubClient + buffers ≈ 6 KB each) inside
 // a WROOM's 320 KB with headroom.
@@ -116,4 +120,4 @@
 #define TOPIC_CMD_FMT "tenants/%s/devices/%s/cmd"
 #define TOPIC_STATE_FMT "tenants/%s/devices/%s/state"
 
-#define FW_VERSION "0.5.0"
+#define FW_VERSION "0.6.0"

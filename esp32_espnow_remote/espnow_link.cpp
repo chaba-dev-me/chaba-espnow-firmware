@@ -7,6 +7,30 @@
 
 extern NvsStore nvs;
 
+// Per-device random Primary Master Key (red-team H3): the legacy
+// shared constant (SHA256("chaba-espnow-v1-pmk")[0..15]) shipped in
+// this public repo. The PMK is never the effective frame key — every
+// peer registers encrypt=true with a per-pair HKDF LMK — but a
+// per-device random value means no shared, publicly-harvestable
+// constant survives in the source. Persisted as "espnow.pmk" (32 hex
+// chars) so it is stable across reboots.
+static void chabaInstallPmk() {
+  uint8_t pmk[16];
+  char hex[33];
+  bool have = nvs.getCStr("espnow.pmk", hex, sizeof(hex)) && strlen(hex) == 32;
+  if (have) {
+    for (int i = 0; i < 16; i++) {
+      char b[3] = {hex[i * 2], hex[i * 2 + 1], 0};
+      pmk[i] = (uint8_t)strtoul(b, NULL, 16);
+    }
+  } else {
+    for (int i = 0; i < 16; i++) pmk[i] = (uint8_t)esp_random();
+    for (int i = 0; i < 16; i++) snprintf(hex + i * 2, 3, "%02x", pmk[i]);
+    nvs.putCStr("espnow.pmk", hex);
+  }
+  esp_now_set_pmk(pmk);
+}
+
 RemoteLink espnow;
 
 static volatile bool s_txDone = false;
@@ -88,6 +112,7 @@ bool RemoteLink::begin(bool pinChannel) {
     Serial.println(esp_err_to_name(err));
     return false;
   }
+  chabaInstallPmk();
   esp_now_register_send_cb(onSent);
   esp_now_register_recv_cb(onRecv);
   Serial.println("espnow: initialised (remote role)");
